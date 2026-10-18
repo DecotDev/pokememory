@@ -4,7 +4,7 @@ export async function getAllPokemonList() {
     const data = await response.json();
     return data.results;
   } catch (error) {
-    console.error("Error fetching Pokémon list:", error);
+    console.error("Error fetching Pokemon list:", error);
     return [];
   }
 }
@@ -14,7 +14,7 @@ export async function getPokemonDetails(query) {
     const response = await fetch(
       `https://pokeapi.co/api/v2/pokemon/${query.toLowerCase()}`,
     );
-    if (!response.ok) throw new Error("Pokémon not found");
+    if (!response.ok) throw new Error("Pokemon not found");
     const data = await response.json();
 
     return {
@@ -25,5 +25,5 @@ export async function getPokemonDetails(query) {
   } catch (error) {
     console.error(`Error fetching details for ${query}:`, error);
     return null;
-  }
+  } 
 }
