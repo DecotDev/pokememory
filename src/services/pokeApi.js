@@ -1,6 +1,6 @@
 export async function getAllPokemonList() {
   try {
-    const response = await fetch("https://pokeapi.co/api/v2/pokemon?");
+    const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=2000");
     const data = await response.json();
     return data.results;
   } catch (error) {
