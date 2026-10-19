@@ -10,6 +10,18 @@ body {
   background-color: #f4f4f9;
 }
 
+.main-title {
+  text-align: center;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 3rem;
+  color: #2a75bb;
+  text-shadow: 3px 3px 0px #ffcb05;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
 .main-container {
   padding: 2rem;
   text-align: center;
