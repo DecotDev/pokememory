@@ -39,7 +39,7 @@ export function renderGameView(user) {
             <div id="timer-display" style="font-size: 1.2rem; font-weight: bold; color: #333;">Time: 0m 0s</div>
             <button id="restart-btn" style="padding: 0.5rem 1rem; background-color: #ffcb05; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Restart Game</button>
           </div>
-          <div id="cards-grid" style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));"></div>
+          <div id="cards-grid" style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));"></div>
         </div>
       </section>
 
@@ -100,36 +100,42 @@ export function renderGameView(user) {
   });
 
   async function initializeGame(cardsCount) {
-    cardsGrid.innerHTML = `<p>Loading Pokémon from PokeAPI...</p>`;
-    
+    cardsGrid.innerHTML = `<p>Loading Pokemon from PokeAPI...</p>`;
+
+    // Get all pokemons and get random unique ones
     const allPokemons = await getAllPokemonList();
-    console.log(`Total Pokémon fetched: ${allPokemons.length}`);
-    const uniquePairsNeeded = cardsCount / 2;
+    const uniquePairsNumber = cardsCount / 2;
 
     const selectedPokemons = [];
-    const usedIndices = new Set();
+    const usedPokemonIDs = new Set();
 
-    while (selectedPokemons.length < uniquePairsNeeded) {
-      const randomIndex = Math.floor(Math.random() * allPokemons.length);
-      if (!usedIndices.has(randomIndex)) {
-        usedIndices.add(randomIndex);
-        selectedPokemons.push(allPokemons[randomIndex]);
+    while (selectedPokemons.length < uniquePairsNumber) {
+      const randomID = Math.floor(Math.random() * allPokemons.length);
+      if (!usedPokemonIDs.has(randomID)) {
+        usedPokemonIDs.add(randomID);
+        selectedPokemons.push(allPokemons[randomID]);
       }
     }
 
-    // 3. Fetch details for each
+    // get pokemon details with promise
     const pokemonDetailsPromises = selectedPokemons.map(p => getPokemonDetails(p.name));
     const pokemonDetails = await Promise.all(pokemonDetailsPromises);
 
-    // 4. Duplicate and shuffle
+    // duplicate and mix
     const deck = [...pokemonDetails, ...pokemonDetails]
       .sort(() => Math.random() - 0.5)
       .map((poke, index) => ({ ...poke, uniqueId: index }));
 
-    // Render cards
+    // Displays cards unflipped
     cardsGrid.innerHTML = deck.map(poke => `
-      <div class="card" data-name="${poke.name}" style="background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; height: 100px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-        <img src="${poke.image}" alt="${poke.name}" style="width: 70px; height: 70px; object-fit: contain;" />
+      <div class="card" data-name="${poke.name}" style="background: linear-gradient(135deg, #1b365d 0%, #2a75bb 50%, #0d1b2a 100%); border: 3px solid #ffcb05; border-radius: 8px; height: 100px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; box-shadow: 0 3px 6px rgba(0,0,0,0.15);">
+        <div class="card-back" style="width: 85%; height: 85%; border: 2px solid rgba(255,255,255,0.8); border-radius: 4px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #2a75bb 30%, #0d1b2a 90%);">
+          <!-- Pokeball design -->
+          <div style="width: 42px; height: 42px; border-radius: 50%; border: 3px solid #111; background: linear-gradient(to bottom, #ee1515 0%, #ee1515 42%, #111 42%, #111 58%, #ffffff 58%, #ffffff 100%); position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+            <div style="width: 14px; height: 14px; border-radius: 50%; background: #ffffff; border: 3px solid #111; box-shadow: inset 0 0 2px rgba(0,0,0,0.3);"></div>
+          </div>
+        </div>
+        <img src="${poke.image}" alt="${poke.name}" class="card-img" style="width: 75px; height: 75px; object-fit: contain; display: none;" />
       </div>
     `).join('');
 
@@ -144,6 +150,88 @@ export function renderGameView(user) {
       const seconds = secondsElapsed % 60;
       timerDisplay.textContent = `Time: ${minutes}m ${seconds}s`;
     }, 1000);
+
+    // Game interaction logic
+    let hasFlippedCard = false;
+    let lockBoard = false;
+    let firstCard = null;
+    let secondCard = null;
+    let matchedPairsCount = 0;
+    const totalPairsNeeded = uniquePairsNumber;
+
+    const cardElements = cardsGrid.querySelectorAll('.card');
+
+    cardElements.forEach(card => {
+      card.addEventListener('click', () => {
+        if (lockBoard) return;
+        if (card === firstCard) return;
+        if (card.classList.contains('matched')) return;
+
+        // Flip card
+        card.style.background = '#f9f9f9';
+        card.style.border = '2px solid #ccc';
+        card.querySelector('.card-back').style.display = 'none';
+        card.querySelector('.card-img').style.display = 'block';
+
+        if (!hasFlippedCard) {
+          hasFlippedCard = true;
+          firstCard = card;
+          return;
+        }
+
+        secondCard = card;
+        checkForMatch();
+      });
+    });
+
+    function checkForMatch() {
+      const isMatch = firstCard.dataset.name === secondCard.dataset.name;
+
+      if (isMatch) {
+        disableCards();
+      } else {
+        unflipCards();
+      }
+    }
+
+    function disableCards() {
+      firstCard.classList.add('matched');
+      secondCard.classList.add('matched');
+      matchedPairsCount++;
+
+      resetBoard();
+
+      if (matchedPairsCount === totalPairsNeeded) {
+        clearInterval(timerInterval);
+        setTimeout(() => {
+          alert(`Congratulations! You won the game in ${timerDisplay.textContent}! 🎉`);
+        }, 300);
+      }
+    }
+
+    function unflipCards() {
+      lockBoard = true;
+
+      setTimeout(() => {
+        // Unflip cards
+        firstCard.style.background = 'linear-gradient(135deg, #1b365d 0%, #2a75bb 50%, #0d1b2a 100%)';
+        firstCard.style.border = '3px solid #ffcb05';
+        firstCard.querySelector('.card-back').style.display = 'flex';
+        firstCard.querySelector('.card-img').style.display = 'none';
+
+        secondCard.style.background = 'linear-gradient(135deg, #1b365d 0%, #2a75bb 50%, #0d1b2a 100%)';
+        secondCard.style.border = '3px solid #ffcb05';
+        secondCard.querySelector('.card-back').style.display = 'flex';
+        secondCard.querySelector('.card-img').style.display = 'none';
+
+        resetBoard();
+      }, 1000);
+    }
+
+    function resetBoard() {
+      [hasFlippedCard, lockBoard] = [false, false];
+      [firstCard, secondCard] = [null, null];
+    }
   }
 
   function showError(message) {
