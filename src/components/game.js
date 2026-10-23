@@ -1,23 +1,33 @@
 import { getAllPokemonList, getPokemonDetails } from "../services/pokeApi.js";
+import { saveGameResult, renderRanking } from "../services/ranking.js";
 
 export function renderGameView(user) {
   const appContainer = document.querySelector("#app");
 
   appContainer.innerHTML = `
-    <main class="main-container" style="display: flex; gap: 2rem; padding: 2rem; font-family: sans-serif; align-items: flex-start; justify-content: center; flex-wrap: wrap;">
+    <main class="main-container" style="display: flex; gap: 2rem; padding: 2rem; width: 100%; box-sizing: border-box; font-family: sans-serif; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;">
       
-      <!-- Profile -->
-      <section style="background: #f9f9f9; border: 2px solid #ffcb05; padding: 1.2rem; border-radius: 8px; text-align: center; min-width: 180px;">
-        <h3 style="margin-bottom: 0.5rem;"><span style="color: #2a75bb;">${user.username}</span></h3>
-        <p style="margin: 0.5rem 0;">Pokemon:</p>
-        <img src="${user.image}" alt="${user.name}" style="width: 80px; height: 80px; object-fit: contain; display: block; margin: 0 auto;" />
-        <p style="margin: 0.5rem 0 1rem 0;"><strong>${user.name.toUpperCase()}</strong></p>
-        
-        <button id="signout-button" style="width: 100%; padding: 0.5rem 1rem; background-color: #ff5555; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Sign out</button>
-      </section>
+      <!-- Left Sidebar: Profile and Ranking -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem; width: 280px; min-width: 250px; flex-shrink: 0;">
+        <!-- Profile -->
+        <section style="background: #f9f9f9; border: 2px solid #ffcb05; padding: 1.2rem; border-radius: 8px; text-align: center;">
+          <h3 style="margin-bottom: 0.5rem;"><span style="color: #2a75bb;">${user.username}</span></h3>
+          <p style="margin: 0.5rem 0;">Pokemon:</p>
+          <img src="${user.image}" alt="${user.name}" style="width: 80px; height: 80px; object-fit: contain; display: block; margin: 0 auto;" />
+          <p style="margin: 0.5rem 0 1rem 0;"><strong>${user.name.toUpperCase()}</strong></p>
+          
+          <button id="signout-button" style="width: 100%; padding: 0.5rem 1rem; background-color: #ff5555; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Sign out</button>
+        </section>
+
+        <!-- Ranking Section -->
+        <section style="background: #fff; border: 1px solid #ccc; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+          <h3 style="margin-bottom: 0.5rem; font-size: 1rem; text-align: center;">Ranking</h3>
+          <div id="ranking-list" style="overflow-x: auto;"></div>
+        </section>
+      </div>
 
       <!-- Game settings -->
-      <section style="flex: 1; min-width: 300px; background: #fff; border: 1px solid #ccc; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+      <section style="flex: 1; min-width: 320px; background: #fff; border: 1px solid #ccc; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
         <h2>Game Area - PokeMemory</h2>
         <hr style="margin: 1rem 0; border: 0; border-top: 1px solid #eee;">
 
@@ -60,9 +70,14 @@ export function renderGameView(user) {
   const timerDisplay = document.getElementById('timer-display');
   const cardsGrid = document.getElementById('cards-grid');
   const restartBtn = document.getElementById('restart-btn');
+  const rankingList = document.getElementById('ranking-list');
 
   let timerInterval = null;
   let secondsElapsed = 0;
+  let lastGameId = null;
+
+  // Render ranking on load
+  renderRanking(rankingList, lastGameId);
 
   setupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -158,6 +173,7 @@ export function renderGameView(user) {
     let secondCard = null;
     let matchedPairsCount = 0;
     const totalPairsNeeded = uniquePairsNumber;
+    let gameFinished = false;
 
     const cardElements = cardsGrid.querySelectorAll('.card');
 
@@ -166,6 +182,7 @@ export function renderGameView(user) {
         if (lockBoard) return;
         if (card === firstCard) return;
         if (card.classList.contains('matched')) return;
+        if (gameFinished) return;
 
         // Flip card
         card.style.background = '#f9f9f9';
@@ -201,8 +218,14 @@ export function renderGameView(user) {
 
       resetBoard();
 
-      if (matchedPairsCount === totalPairsNeeded) {
+      if (matchedPairsCount === totalPairsNeeded && !gameFinished) {
+        gameFinished = true;
         clearInterval(timerInterval);
+
+        // Save result and update ranking
+        lastGameId = saveGameResult(user, cardsCount, secondsElapsed, lastGameId);
+        renderRanking(rankingList, lastGameId);
+
         setTimeout(() => {
           alert(`Congratulations! You won the game in ${timerDisplay.textContent}! 🎉`);
         }, 300);
