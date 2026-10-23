@@ -26,7 +26,7 @@ export function renderRanking(container, lastGameId) {
   const history = JSON.parse(localStorage.getItem('poke_ranking')) || [];
 
   if (history.length === 0) {
-    container.innerHTML = `<p style="font-size: 0.85rem; color: #666; text-align: center;">No games played yet.</p>`;
+    container.innerHTML = `<p class="no-records">No games played yet.</p>`;
     return;
   }
 
@@ -39,14 +39,14 @@ export function renderRanking(container, lastGameId) {
   });
 
   let html = `
-    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+    <table class="ranking-table">
       <thead>
-        <tr style="border-bottom: 2px solid #ccc; background: #f4f4f4;">
-          <th style="padding: 6px;">Pos</th>
-          <th style="padding: 6px;">Player</th>
-          <th style="padding: 6px;">Fav</th>
-          <th style="padding: 6px; text-align: center;">Cards</th>
-          <th style="padding: 6px;">Time</th>
+        <tr>
+          <th style="padding: 8px;">Pos</th>
+          <th style="padding: 8px;">Player</th>
+          <th style="padding: 8px;">PK</th>
+          <th style="padding: 8px; text-align: center;">Cards</th>
+          <th style="padding: 8px;">Time</th>
         </tr>
       </thead>
       <tbody>
@@ -62,17 +62,15 @@ export function renderRanking(container, lastGameId) {
       return;
     }
 
-    const rowStyle = isLatest 
-      ? 'background-color: #fff9c4; font-weight: bold; border-left: 4px solid #ffcb05;' 
-      : 'border-bottom: 1px solid #eee;';
+    const rowClass = isLatest ? 'ranking-row ranking-latest' : 'ranking-row';
 
     html += `
-      <tr style="${rowStyle}">
-        <td style="padding: 6px;">#${index + 1}</td>
-        <td style="padding: 6px;">${item.username}</td>
-        <td style="padding: 6px;"><img src="${item.pokemonImage}" alt="${item.pokemonName}" style="width: 22px; height: 22px; vertical-align: middle;" /></td>
-        <td style="padding: 6px; text-align: center;">${item.cardsCount}</td>
-        <td style="padding: 6px;">${item.timeString}</td>
+      <tr class="${rowClass}">
+        <td>#${index + 1}</td>
+        <td>${item.username}</td>
+        <td><img src="${item.pokemonImage}" alt="${item.pokemonName}" style="width: 22px; height: 22px; vertical-align: middle;" /></td>
+        <td style="text-align: center;">${item.cardsCount}</td>
+        <td>${item.timeString}</td>
       </tr>
     `;
   });
@@ -86,8 +84,8 @@ export function renderRanking(container, lastGameId) {
   if (history.length > maxVisible) {
     const buttonText = showAllRecords ? "Show less (Top 5)" : `Show all (${history.length} records)`;
     html += `
-      <div style="text-align: center; margin-top: 0.5rem;">
-        <button id="toggle-ranking-btn" style="background: none; border: none; color: #2a75bb; font-size: 0.8rem; font-weight: bold; cursor: pointer; text-decoration: underline;">
+      <div style="text-align: center;">
+        <button id="toggle-ranking-btn" class="toggle-btn">
           ${buttonText}
         </button>
       </div>

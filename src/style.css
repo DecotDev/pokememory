@@ -7,22 +7,408 @@
 body {
   font-family: system-ui, -apple-system, sans-serif;
   min-height: 100vh;
-  background-color: #f4f4f9;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: #333;
 }
 
 .main-title {
   text-align: center;
   margin-top: 2rem;
   margin-bottom: 1rem;
-  font-size: 3rem;
-  color: #2a75bb;
-  text-shadow: 3px 3px 0px #ffcb05;
+  font-family: 'Outfit', sans-serif;
+  font-size: 4rem;
+  background: linear-gradient(135deg, #1b365d 0%, #2a75bb 50%, #ffcb05 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.12));
   font-weight: 900;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   text-transform: uppercase;
 }
-
 .main-container {
+  display: flex;
+  gap: 2rem;
   padding: 2rem;
+  width: 100%;
+  max-width: 1350px;
+  margin: 0 auto;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* Profile Container */
+.profile-wrapper {
+  max-width: 420px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  background: #ffffff;
+  border: 3px solid #ffcb05;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.profile-wrapper h2 {
+  color: #2a75bb;
   text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #444;
+  display: inline-block;
+  margin-bottom: 0.3rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: #2a75bb;
+  outline: none;
+}
+
+.suggestions-list {
+  position: absolute;
+  width: 100%;
+  max-height: 250px;
+  overflow-y: auto;
+  background: white;
+  border: 2px solid #2a75bb;
+  border-radius: 0 0 8px 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: none;
+  z-index: 10;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.suggestion-item {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 500;
+  transition: background 0.1s;
+}
+
+.suggestion-item:hover {
+  background: #eef5fc;
+  color: #2a75bb;
+}
+
+.pokemon-preview {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  background: #fdfdfd;
+  border: 2px dashed #ffcb05;
+  padding: 1rem;
+  border-radius: 12px;
+  display: none;
+}
+
+.pokemon-preview img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  margin-top: 0.5rem;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.85rem;
+  background: linear-gradient(135deg, #ffcb05 0%, #ffbb00 100%);
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  color: #1b365d;
+  box-shadow: 0 4px 10px rgba(255,203,5,0.4);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255,203,5,0.6);
+}
+
+/* Sidebar & Layout in Game */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 350px;
+  min-width: 320px;
+  flex-shrink: 0;
+}
+
+.user-card {
+  background: #ffffff;
+  border: 3px solid #ffcb05;
+  padding: 1.5rem;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+}
+
+.user-card h3 span {
+  color: #2a75bb;
+  font-size: 1.4rem;
+}
+
+.user-card img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  display: block;
+  margin: 0.5rem auto;
+}
+
+.btn-danger {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(135deg, #ff5555 0%, #cc0000 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(255, 85, 85, 0.3);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 85, 85, 0.5);
+}
+.ranking-section, .game-section {
+  background: #ffffff;
+  border: 2px solid #e1e8ed;
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+}
+
+.game-section {
+  flex: 1;
+  min-width: 320px;
+}
+
+.game-section h2 {
+  color: #1b365d;
+  margin-bottom: 0.5rem;
+}
+
+.separator {
+  margin: 1rem 0;
+  border: 0;
+  border-top: 2px solid #f0f4f8;
+}
+
+/* Ranking Table Styles */
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.ranking-table th {
+  padding: 10px 8px;
+  background: #2a75bb;
+  color: white;
+  font-weight: 600;
+}
+
+.ranking-table th:first-child {
+  border-top-left-radius: 6px;
+}
+
+.ranking-table th:last-child {
+  border-top-right-radius: 6px;
+}
+
+.ranking-row {
+  border-bottom: 1px solid #edf2f7;
+  transition: background 0.1s;
+}
+
+.ranking-row:hover {
+  background: #f7fafc;
+}
+
+.ranking-row td {
+  padding: 10px 8px;
+}
+
+.ranking-latest {
+  background-color: #fffde7 !important;
+  font-weight: bold;
+  border-left: 4px solid #ffcb05;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: #2a75bb;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 0.8rem;
+}
+
+.no-records {
+  font-size: 0.9rem;
+  color: #718096;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* Game Board & Setup */
+.setup-form-group {
+  margin-bottom: 1.2rem;
+}
+
+.btn-start {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #2a75bb 0%, #1b365d 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 4px 10px rgba(42,117,187,0.3);
+  transition: transform 0.1s;
+}
+
+.btn-start:hover {
+  transform: translateY(-2px);
+}
+
+.error-feedback {
+  color: #e53e3e;
+  margin-top: 0.5rem;
+  font-weight: bold;
+  display: none;
+}
+
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.timer-display {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2d3748;
+  background: #edf2f7;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+}
+
+.btn-restart {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #ffcb05 0%, #ffbb00 100%);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #1b365d;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.cards-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+}
+
+.card {
+  background: linear-gradient(135deg, #1b365d 0%, #2a75bb 50%, #0d1b2a 100%);
+  border: 3px solid #ffcb05;
+  border-radius: 12px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+.card-back {
+  width: 85%;
+  height: 85%;
+  border: 2px solid rgba(255,255,255,0.8);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #2a75bb 30%, #0d1b2a 90%);
+}
+
+.pokeball {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid #111;
+  background: linear-gradient(to bottom, #ee1515 0%, #ee1515 42%, #111 42%, #111 58%, #ffffff 58%, #ffffff 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.pokeball-center {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #111;
+  box-shadow: inset 0 0 2px rgba(0,0,0,0.3);
+}
+
+.card-img {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+  display: none;
+}
+
+/* Color feedback for card matching */
+.card.wrong {
+  background: #fed7d7 !important; /* Rojo ligero */
+  border-color: #e53e3e !important;
+}
+
+.card.matched {
+  background: #c6f6d5 !important; /* Verde ligero */
+  border-color: #38a169 !important;
+  cursor: default;
 }
