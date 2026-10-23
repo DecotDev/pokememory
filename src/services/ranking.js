@@ -1,6 +1,6 @@
 let showAllRecords = false;
 
-export function saveGameResult(user, cardsCount, totalSeconds, currentLastGameId) {
+export function saveGameResult(user, cardsCount, totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   const timeString = `${minutes}m ${seconds}s`;
