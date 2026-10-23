@@ -5,51 +5,50 @@ export function renderGameView(user) {
   const appContainer = document.querySelector("#app");
 
   appContainer.innerHTML = `
-    <main class="main-container" style="display: flex; gap: 2rem; padding: 2rem; width: 100%; box-sizing: border-box; font-family: sans-serif; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;">
+    <main class="main-container">
       
       <!-- Left Sidebar: Profile and Ranking -->
-      <div style="display: flex; flex-direction: column; gap: 1.5rem; width: 280px; min-width: 250px; flex-shrink: 0;">
+      <div class="sidebar">
         <!-- Profile -->
-        <section style="background: #f9f9f9; border: 2px solid #ffcb05; padding: 1.2rem; border-radius: 8px; text-align: center;">
-          <h3 style="margin-bottom: 0.5rem;"><span style="color: #2a75bb;">${user.username}</span></h3>
-          <p style="margin: 0.5rem 0;">Pokemon:</p>
-          <img src="${user.image}" alt="${user.name}" style="width: 80px; height: 80px; object-fit: contain; display: block; margin: 0 auto;" />
-          <p style="margin: 0.5rem 0 1rem 0;"><strong>${user.name.toUpperCase()}</strong></p>
-          
-          <button id="signout-button" style="width: 100%; padding: 0.5rem 1rem; background-color: #ff5555; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Sign out</button>
+        <section class="user-card">
+          <h1><span>${user.username}</span></h1>
+          <p style="margin: 0.8rem 0 0.3rem 0;"><strong>${user.name.toUpperCase()}</strong></p>
+          <img src="${user.image}" alt="${user.name}" />
+          <br>
+          <button id="signout-button" class="btn-danger">Sign out</button>
         </section>
 
         <!-- Ranking Section -->
-        <section style="background: #fff; border: 1px solid #ccc; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <section class="ranking-section">
           <h3 style="margin-bottom: 0.5rem; font-size: 1rem; text-align: center;">Ranking</h3>
           <div id="ranking-list" style="overflow-x: auto;"></div>
         </section>
       </div>
 
       <!-- Game settings -->
-      <section style="flex: 1; min-width: 320px; background: #fff; border: 1px solid #ccc; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-        <h2>Game Area - PokeMemory</h2>
-        <hr style="margin: 1rem 0; border: 0; border-top: 1px solid #eee;">
+      <section class="game-section">
+        <h2>Game Area</h2>
+        <hr class="separator">
 
         <div id="setup-container">
           <h3>Configure your game</h3>
           <form id="game-setup-form" style="margin-top: 1rem;">
-            <div style="margin-bottom: 1rem;">
+            <div class="setup-form-group">
               <label for="num-cards">Number of cards (must be integer, positive and even):</label><br>
-              <input type="number" id="num-cards" min="2" max="200" step="2" value="8" style="width: 100%; max-width: 300px; padding: 0.5rem; margin-top: 0.3rem;" />
+              <input type="number" id="num-cards" class="form-input" min="2" max="200" step="2" value="8" style="max-width: 300px; margin-top: 0.3rem;" />
             </div>
-            <button type="submit" style="padding: 0.75rem 1.5rem; background-color: #2a75bb; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem;">Start Game</button>
+            <button type="submit" class="btn-start">Start Game</button>
           </form>
-          <p id="error-feedback" style="color: #ff5555; margin-top: 0.5rem; font-weight: bold; display: none;"></p>
+          <p id="error-feedback" class="error-feedback"></p>
         </div>
 
         <!-- Board and timer div -->
         <div id="board-container" style="margin-top: 1.5rem; display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <div id="timer-display" style="font-size: 1.2rem; font-weight: bold; color: #333;">Time: 0m 0s</div>
-            <button id="restart-btn" style="padding: 0.5rem 1rem; background-color: #ffcb05; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Restart Game</button>
+          <div class="board-header">
+            <div id="timer-display" class="timer-display">Time: 0m 0s</div>
+            <button id="restart-btn" class="btn-restart">Restart Game</button>
           </div>
-          <div id="cards-grid" style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));"></div>
+          <div id="cards-grid" class="cards-grid"></div>
         </div>
       </section>
 
@@ -109,6 +108,8 @@ export function renderGameView(user) {
 
   restartBtn.addEventListener('click', () => {
     clearInterval(timerInterval);
+    secondsElapsed = 0;
+    timerDisplay.textContent = `Time: 0m 0s`;
     boardContainer.style.display = "none";
     setupContainer.style.display = "block";
     numCardsInput.value = "8";
@@ -143,14 +144,14 @@ export function renderGameView(user) {
 
     // Displays cards unflipped
     cardsGrid.innerHTML = deck.map(poke => `
-      <div class="card" data-name="${poke.name}" style="background: linear-gradient(135deg, #1b365d 0%, #2a75bb 50%, #0d1b2a 100%); border: 3px solid #ffcb05; border-radius: 8px; height: 100px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; box-shadow: 0 3px 6px rgba(0,0,0,0.15);">
-        <div class="card-back" style="width: 85%; height: 85%; border: 2px solid rgba(255,255,255,0.8); border-radius: 4px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #2a75bb 30%, #0d1b2a 90%);">
+      <div class="card" data-name="${poke.name}">
+        <div class="card-back">
           <!-- Pokeball design -->
-          <div style="width: 42px; height: 42px; border-radius: 50%; border: 3px solid #111; background: linear-gradient(to bottom, #ee1515 0%, #ee1515 42%, #111 42%, #111 58%, #ffffff 58%, #ffffff 100%); position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">
-            <div style="width: 14px; height: 14px; border-radius: 50%; background: #ffffff; border: 3px solid #111; box-shadow: inset 0 0 2px rgba(0,0,0,0.3);"></div>
+          <div class="pokeball">
+            <div class="pokeball-center"></div>
           </div>
         </div>
-        <img src="${poke.image}" alt="${poke.name}" class="card-img" style="width: 75px; height: 75px; object-fit: contain; display: none;" />
+        <img src="${poke.image}" alt="${poke.name}" class="card-img" />
       </div>
     `).join('');
 
@@ -174,15 +175,24 @@ export function renderGameView(user) {
     let matchedPairsCount = 0;
     const totalPairsNeeded = uniquePairsNumber;
     let gameFinished = false;
+    let unflipTimeout = null;
 
     const cardElements = cardsGrid.querySelectorAll('.card');
 
     cardElements.forEach(card => {
       card.addEventListener('click', () => {
+        if (gameFinished) return;
+        if (card.classList.contains('matched')) return;
+
+        // hide cards on 3rd card click
+        if (lockBoard && firstCard && secondCard) {
+          clearTimeout(unflipTimeout);
+          hideCards(firstCard, secondCard);
+          resetBoard();
+        }
+
         if (lockBoard) return;
         if (card === firstCard) return;
-        if (card.classList.contains('matched')) return;
-        if (gameFinished) return;
 
         // Flip card
         card.style.background = '#f9f9f9';
@@ -232,23 +242,30 @@ export function renderGameView(user) {
       }
     }
 
+    function hideCards(c1, c2) {
+      c1.classList.remove('wrong');
+      c2.classList.remove('wrong');
+      c1.style.background = '';
+      c1.style.border = '';
+      c1.querySelector('.card-back').style.display = 'flex';
+      c1.querySelector('.card-img').style.display = 'none';
+
+      c2.style.background = '';
+      c2.style.border = '';
+      c2.querySelector('.card-back').style.display = 'flex';
+      c2.querySelector('.card-img').style.display = 'none';
+    }
+
     function unflipCards() {
       lockBoard = true;
 
-      setTimeout(() => {
-        // Unflip cards
-        firstCard.style.background = 'linear-gradient(135deg, #1b365d 0%, #2a75bb 50%, #0d1b2a 100%)';
-        firstCard.style.border = '3px solid #ffcb05';
-        firstCard.querySelector('.card-back').style.display = 'flex';
-        firstCard.querySelector('.card-img').style.display = 'none';
+      firstCard.classList.add('wrong');
+      secondCard.classList.add('wrong');
 
-        secondCard.style.background = 'linear-gradient(135deg, #1b365d 0%, #2a75bb 50%, #0d1b2a 100%)';
-        secondCard.style.border = '3px solid #ffcb05';
-        secondCard.querySelector('.card-back').style.display = 'flex';
-        secondCard.querySelector('.card-img').style.display = 'none';
-
+      unflipTimeout = setTimeout(() => {
+        hideCards(firstCard, secondCard);
         resetBoard();
-      }, 1000);
+      }, 1500);
     }
 
     function resetBoard() {
