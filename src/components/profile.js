@@ -98,7 +98,7 @@ export async function renderProfileView(onProfileCreated) {
     const username = document.getElementById("username").value.trim();
 
     if (username.length < 3 || username.length > 15) {
-      alert("El nombre de usuario debe tener entre 3 y 15 characters.");
+      alert("The username must be between 3 and 15 characters.");
       return;
     }
 
