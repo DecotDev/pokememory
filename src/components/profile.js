@@ -10,7 +10,7 @@ export async function renderProfileView(onProfileCreated) {
       
       <form id="profile-form">
         <div class="form-group">
-          <label for="username">Username (3 a 15 caracteres):</label><br>
+          <label for="username">Username (3 a 15 characters):</label><br>
           <input type="text" id="username" class="form-input" required minlength="3" maxlength="15" />
         </div>
 
