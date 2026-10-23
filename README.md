@@ -1,2 +1,3 @@
 David Estorach Pérez
-https://pokememorydev.vercel.app/
+Web: https://pokememorydev.vercel.app/
+Video: https://youtu.be/vv9NEdd-L9Y
